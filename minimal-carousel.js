@@ -14,20 +14,15 @@ function Carousel(settings){
   }
 }
 
-Carousel.prototype.next = function (is_interval_call) {
+Carousel.prototype.next = function () {
   'use strict';
   for (var s = 0; s < this.slides.length; s += 1) {
     this.slides[s].style.display = 'none';
-  }
+ }
   this.current_slide = (this.current_slide + 1) % this.slides.length;
   this.slides[this.current_slide].style.display = 'block';
-  if (this.autoplay && this.interval && !is_interval_call) {
-    var that = this;
-    clearInterval(this.interval);
-    this.interval = setTimeout(function () {
-      that.play();
-    }, this.delay * 1000);
-  }
+  this.updateStyleSelected(this.current_slide);
+
 };
 
 Carousel.prototype.prev = function () {
@@ -37,29 +32,44 @@ Carousel.prototype.prev = function () {
   }
   this.current_slide = Math.abs(this.current_slide - 1) % this.slides.length;
   this.slides[this.current_slide].style.display = 'block';
-  if (this.autoplay && this.interval) {
-    var that = this;
-    clearInterval(this.interval);
+   this.updateStyleSelected(this.current_slide);
+
+};
+Carousel.prototype.goToSlide = function (num) {
+  'use strict'; 
+  for (var s = 0; s < this.slides.length; s += 1) {
+    this.slides[s].style.display = 'none';
+  }
+    this.slides[num].style.display = 'block';
+    this.updateStyleSelected(num);
+
+};
+
+Carousel.prototype.updateStyleSelected= function (num) {
+   for (var s = 0; s < this.slides.length; s += 1) {
+  	document.getElementById("carouselnumber"+s).style.background = 'transparent';
+  }
+   document.getElementById("carouselnumber"+num).style.background = '#eee';
+};
+
+
+
+
+Carousel.prototype.play = function () {
+  'use strict';
+  this.next();
+  var that = this;
+  if (this.autoplay) {
     this.interval = setTimeout(function () {
       that.play();
     }, this.delay * 1000);
   }
 };
 
-Carousel.prototype.play = function () {
-  'use strict';
-  this.next(true);
-  var that = this;
-  this.autoplay = true;
-  this.interval = setTimeout(function () {
-    that.play();
-  }, this.delay * 1000);
-};
-
 Carousel.prototype.stop = function () {
   'use strict';
   if (this.interval) {
-    this.autoplay = false;
     clearInterval(this.interval);
   }
 };
+
